@@ -27,7 +27,7 @@ type Transaction struct {
 	AccountID int `json:"account_id"`
 	Name string `json:"name"`
 	Amount float64 `json:"amount"`
-	TransactionDate time.Time `json:"transaction_date"`
+	Date string `json:"transaction_date"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
 	CategoryID int `json:"category_id"`

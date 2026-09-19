@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func getAccounts(w http.ResponseWriter, r *http.Request) {
+func getAccount(w http.ResponseWriter, r *http.Request) {
 	// Ask postgresql for all expenses
 	rows, err := db.Query("SELECT id, name FROM accounts WHERE deleted_at IS NULL")
 	if err != nil {

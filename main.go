@@ -20,6 +20,9 @@ func main() {
 		port = "8080"
 	}
 
+	// register handler to routes
+	
+
 	log.Println("server running on port" + port)
 
 	// Start the HTTP server,

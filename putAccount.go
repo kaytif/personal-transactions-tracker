@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"github.com/jackc/pgx/v5/pgconn"
 	"database/sql"
-	"time"
 )
 
 // a json decoding error for example occurs when something that needs to be integer in struct is entered as something else in the input
