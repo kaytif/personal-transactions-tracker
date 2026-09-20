@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// register handler to routes
-	
+	http.HandleFunc("/transactions", transactionPostHandler)
 
 	log.Println("server running on port" + port)
 

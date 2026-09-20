@@ -30,6 +30,7 @@ type Transaction struct {
 	Date string `json:"transaction_date"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
-	CategoryID int `json:"category_id"`
+	// A transaction may or may not have a category. But an actual category always has an ID.
+	CategoryID *int `json:"category_id"`
 	DeletedAt *time.Time `json:"deleted_at"`
 }

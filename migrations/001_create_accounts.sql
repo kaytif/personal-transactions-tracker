@@ -17,7 +17,7 @@ CREATE TABLE accounts (
 CREATE TABLE categories (
 
     -- Category ID and must be unique
-    category_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     -- Category name
     name TEXT NOT NULL CHECK (length(name) > 0) UNIQUE
