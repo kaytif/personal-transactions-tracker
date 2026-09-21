@@ -53,10 +53,25 @@ CREATE TABLE transactions (
     category_id INTEGER NOT NULL REFERENCES categories(category_id),
 
     -- Deleted save time stamp
-    deleted_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
 
 
     -- What happens to transactions when account is deleted?
     -- i don't know
 );
 
+-- USER TABLE
+-- Stores users entering or leaving the acocunt
+
+CREATE TABLE users (
+
+    -- Unique ID auto generated
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    -- USERNAME that is text
+    username TEXT NOT NULL UNIQUE CHECK (length(username) > 0),
+
+    -- PASSWORD HASH
+    password_hash TEXT NOT NULL CHECK (length(password_hash) > 0)
+
+)

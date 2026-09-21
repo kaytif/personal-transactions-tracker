@@ -40,7 +40,7 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	// If not matching account existed
 	if rowsAffected == 0 {
-		writeJSONError(w, "Account not found", http.StatusBadRequest)
+		writeJSONError(w, "Account not found", http.StatusNotFound)
 		return
 	
 	}

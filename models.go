@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"time"
+	"vendor/golang.org/x/net/idna"
+)
 
 // Expense represents one expense
 
@@ -34,3 +37,20 @@ type Transaction struct {
 	CategoryID *int `json:"category_id"`
 	DeletedAt *time.Time `json:"deleted_at"`
 }
+
+// this is what is received temporarily
+// we hash the password but never store the password itself
+type RegisterRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+
+// this is what our system stores. our system must always store the hash 
+// of the pasword and the not the actual password itself for security reasons
+type User struct {
+	ID int `json:"id"`
+	Username string `json:"username"`
+	PasswordHash string `json:"-"` // Never send hash in JSON responses
+}
+
