@@ -20,8 +20,20 @@ func main() {
 		port = "8080"
 	}
 
-	// register handler to routes
-	http.HandleFunc("/transactions", transactionPostHandler)
+	// for accounts
+
+
+	// register handler to routes for transactions
+ 	http.HandleFunc("/transactions", transactionPostHandler)
+
+	
+	// for categories
+	
+
+
+	// for users
+	http.HandleFunc("/register", registerUser)
+
 
 	log.Println("server running on port" + port)
 

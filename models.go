@@ -2,7 +2,6 @@ package main
 
 import (
 	"time"
-	"vendor/golang.org/x/net/idna"
 )
 
 // Expense represents one expense
