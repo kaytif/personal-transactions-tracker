@@ -1,5 +1,5 @@
-AFTER TABLE accounts
+ALTER TABLE accounts
 ADD COLUMN user_id INTEGER NOT NULL REFERENCES users(id);
 
-AFTER TABLE transactions
+ALTER TABLE categories
 ADD COLUMN user_id INTEGER NOT NULL REFERENCES users(id);

@@ -22,6 +22,9 @@ CREATE TABLE categories (
 
     -- Category name must exist, cannot be empty, and cannot be duplicated
     name TEXT NOT NULL UNIQUE CHECK (length(name) > 0)
+
+    -- Timestamp used for soft deletion
+    deleted_at TIMESTAMPTZ
 );
 
 
