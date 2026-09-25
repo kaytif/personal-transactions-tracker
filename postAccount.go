@@ -10,10 +10,11 @@ import (
 
 func createAccount(w http.ResponseWriter, r *http.Request) {
 
-	// if err != nil || id <= 0 {
-	// 	writeJSONError(w, "Invalid ID", http.StatusBadRequest)
-	// 	return
-	// }
+	userID, ok := getUserID(r)
+	if !ok {
+		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 
 	// Create an empty account
 	var newAccount Account
@@ -37,11 +38,12 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert into db
-	err = db.QueryRow(
-		"INSERT INTO accounts (name) VALUES ($1) returning id",
-		newAccount.Name,
-	).Scan(&newAccount.ID) // we let postgre generate the new id and then we save it in our thing
 
+	err = db.QueryRow(
+		"INSERT INTO accounts (name, user_id) VALUES ($1) returning id, user_id",
+		newAccount.Name,
+		userID,
+	).Scan(&newAccount.ID) // we let postgre generate the new id and then we save it in our thing
 
 
 	// Duplicate error

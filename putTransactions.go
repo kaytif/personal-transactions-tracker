@@ -12,6 +12,13 @@ import (
 // The *http.request has a pointer because the handler receives the address
 // instead of making a copy of the whole address
 func transactionPutHandler(w http.ResponseWriter, r *http.Request){
+
+	// we need to check that the context id we are receiving is integer and store it
+	userID, ok := getUserID(r)
+	if ok == false{
+		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+
 	// first thing to do is to make sure that the transaction id
 	// you are receiving is not null
 	idString := r.URL.Query().Get("id")
@@ -37,8 +44,13 @@ func transactionPutHandler(w http.ResponseWriter, r *http.Request){
 	// Let's check that the transaction actually exists based on the 
 	// transaction id
 	err = db.QueryRow(
-		"SELECT id FROM transactions WHERE id = $1 AND deleted_at IS NULL",
-		id,
+		`SELECT id 
+		FROM accounts
+		JOIN transactions ON accounts.id = transactions.account_id
+		WHERE accounts.user_id = $1
+		AND transactions.deleted_at IS NULL
+		`,
+		userID,
 	).Scan(&storeTransaction.ID)
 
 	if errors.Is(err, sql.ErrNoRows) {

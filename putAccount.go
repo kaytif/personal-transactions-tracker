@@ -22,6 +22,13 @@ func updateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get the verified user ID
+	userID, ok := getUserID(r)
+	if !ok {
+		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	// Create an empty account
 	var newAccount Account
 
@@ -47,8 +54,9 @@ func updateAccount(w http.ResponseWriter, r *http.Request) {
 	var checkAccount Account
 	
 	err = db.QueryRow(
-		"SELECT id, name, deleted_at FROM accounts WHERE id = $1",
+		"SELECT id, name, deleted_at FROM accounts WHERE id = $1 and user_id = $2",
 		id,
+		userID,
 	).Scan(&checkAccount.ID, &checkAccount.Name, &checkAccount.DeletedAt)
 
 
@@ -72,9 +80,10 @@ func updateAccount(w http.ResponseWriter, r *http.Request) {
 		// postgre sql does it for you, here we show the error if postgresql gives us an error
 		// Note that you can only update the new account name and not id because id is already assigned itself by sql
 	result, err := db.Exec(
-		"UPDATE accounts SET name = $1 WHERE id = $2", 
+		"UPDATE accounts SET name = $1 WHERE id = $2 and user_id = $3", 
 		newAccount.Name,
 		id,
+		userID,
 	)
 
 

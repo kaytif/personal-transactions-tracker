@@ -16,6 +16,13 @@ func transactionPostHandler(w http.ResponseWriter, r *http.Request) {
 	// need to add transactionn amount
 	// category id as well
 
+	// authenticate context received from r
+	userID, ok := getUserID(r)
+	if ok == false{
+		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+		}	
+
 	var newTransaction Transaction
 
 	// Here if there are any empty fields this error won't catch it. this error is for any json errors.
@@ -36,11 +43,12 @@ func transactionPostHandler(w http.ResponseWriter, r *http.Request) {
 	// category remaining null means 
 
 	// checked account affiliated must exist
+	var verifyUserID int
 	err = db.QueryRow(
-		"SELECT id FROM accounts WHERE id = $1 AND deleted_at IS NULL",
+		"SELECT id, user_id FROM accounts WHERE id = $1 AND deleted_at IS NULL",
 		newTransaction.AccountID,
 		//point is we check that hey does it exist and if it exists we just store it back
-	).Scan(&newTransaction.AccountID)
+	).Scan(&newTransaction.AccountID, &verifyUserID)
 
 	// give error if no active account with this ID exists.
 	if errors.Is(err, sql.ErrNoRows) {
@@ -53,6 +61,10 @@ func transactionPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 		}
 
+	if verifyUserID != userID{
+		writeJSONError(w, "Not Authorized", http.StatusForbidden)
+		return
+	}
 
 	// we should check here if transaction amount is 0
 	if newTransaction.Amount == 0 {

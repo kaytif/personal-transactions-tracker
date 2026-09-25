@@ -6,38 +6,26 @@ import (
 	"os"
 )
 
-
-// Remember the logic for main is to connect to database, then check connection, then start server
 func main() {
 	// Connect to PostgreSQL.
 	connectDB()
 
-	// Send API requests to handler
-
-	// Render provides PORT when deployed, use 8080 locally
+	// Render provides PORT when deployed; use 8080 locally.
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	// for accounts
+	// Transactions
+	http.HandleFunc("/transactions", transactionPostHandler)
 
-
-	// register handler to routes for transactions
- 	http.HandleFunc("/transactions", transactionPostHandler)
-
-	
-	// for categories
-	
-
-
-	// for users
+	// Users / authentication
 	http.HandleFunc("/register", registerUser)
+	http.HandleFunc("/login", loginHandler)
 
+	log.Println("server running on port " + port)
 
-	log.Println("server running on port" + port)
-
-	// Start the HTTP server,
+	// Start HTTP server.
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal("server failed: ", err)
 	}

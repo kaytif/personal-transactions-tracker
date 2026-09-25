@@ -11,6 +11,8 @@ import (
 
 
 func registerUser(w http.ResponseWriter, r *http.Request) {
+
+	
 	// create an empty registration
 	var newRegistration RegisterRequest
 	

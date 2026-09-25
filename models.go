@@ -53,3 +53,25 @@ type User struct {
 	PasswordHash string `json:"-"` // Never send hash in JSON responses
 }
 
+
+type Login struct {
+    Username string `json:"username"`
+    Password string `json:"password"`
+}
+
+type Session struct {
+	UserID int `json:"user_id"`
+	Token string `json:"token"`
+	ExpiresAt time.Time `json:"expires_at"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type TransactionResponse struct {
+	TransactionID int `json:"transaction_id"`
+	TransactionName string `json:"transaction_name"`
+	TransactionAmount float64 `json:"transaction_amount"`
+	TransactionDate time.Time `json:"transaction_date"`
+	TransactionCreatedAt time.Time `json:"created_at"`
+	AccountName string `json:"account_name"`
+	CategoryName *string `json:"category_name"`
+}
