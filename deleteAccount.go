@@ -13,6 +13,14 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 	// Convert from string to integer
 	id, err := strconv.Atoi(idString)
 
+
+	// get the verified user ID
+	userID, ok := getUserID(r)
+	if !ok {
+		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	if err != nil || id <= 0 {
 		writeJSONError(w, "Invalid ID", http.StatusBadRequest)
 		return
@@ -20,8 +28,9 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	// Delete expense from PostgreSQL
 	result, err := db.Exec(
-		"UPDATE accounts SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL",
+		"UPDATE accounts SET deleted_at = NOW() WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
 		id,
+		userID,
 	)
 
 	if err != nil {

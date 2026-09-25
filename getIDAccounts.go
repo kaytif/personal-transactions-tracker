@@ -19,13 +19,25 @@ func getAccountByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get the verified user ID
+	userID, ok := getUserID(r)
+	if !ok {
+		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	// Store the account returned by PostgreSQL.
 	var accountStore Account
 
 	// Retrieve one active account.
 	err = db.QueryRow(
-		"SELECT id, name FROM accounts WHERE id = $1 AND deleted_at IS NULL",
-		id,
+		`SELECT id, name 
+		FROM accounts 
+		WHERE id = $1 
+		AND user_id = $2
+		AND deleted_at IS NULL`,
+		id, 
+		userID,
 	).Scan(&accountStore.ID, &accountStore.Name)
 
 	// No active account with this ID exists.

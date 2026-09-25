@@ -13,6 +13,13 @@ func deleteTransaction(w http.ResponseWriter, r *http.Request) {
 	// Convert from string to integer
 	id, err := strconv.Atoi(idString)
 
+	// get the verified user ID
+	userID, ok := getUserID(r)
+	if !ok {
+		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	if err != nil || id <= 0 {
 		writeJSONError(w, "Invalid ID", http.StatusBadRequest)
 		return
@@ -20,8 +27,15 @@ func deleteTransaction(w http.ResponseWriter, r *http.Request) {
 
 	// Delete transaction from PostgreSQL
 	result, err := db.Exec(
-		"UPDATE transactions SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL",
-		id,
+		`UPDATE transactions 								-- Modify the transaction table
+		SET deleted_at = NOW() 								-- Soft deletion
+		FROM accounts 										-- we want to make checks in accounts
+		WHERE accounts.id = transactions.account_id 		-- match the right account with the transaction account
+		AND accounts.user_id = $1 							-- match the right user with the user who made the account
+		AND transactions.id = $2 							-- match the right transaction 
+		AND transactions.deleted_at IS NULL 				-- transaction must not already be deleted`,
+		userID,
+		ID,
 	)
 
 	if err != nil {

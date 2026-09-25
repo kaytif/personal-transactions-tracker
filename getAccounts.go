@@ -6,12 +6,28 @@ import (
 )
 
 func getAccount(w http.ResponseWriter, r *http.Request) {
-	// Ask postgresql for all expenses
-	rows, err := db.Query("SELECT id, name FROM accounts WHERE deleted_at IS NULL")
-	if err != nil {
+
+	// get the vertified user ID
+	userID, ok := getUserID(r)
+	if !ok {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+
+	// Ask postgresql for all accounts
+	rows, err := db.Query(
+		`SELECT accounts.name, accounts.id
+		FROM accounts
+		WHERE DELETED_AT IS NULL
+		AND accounts.user_id = $1`,
+		userID,
+	)
+
+
+	if err != nil {
+		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
+	}
+
 	defer rows.Close()
 
 	// Start with an empty slice to empty results return [] instead of null.
@@ -29,7 +45,7 @@ func getAccount(w http.ResponseWriter, r *http.Request) {
 		// Add this account to our list.
 		accounts = append(accounts, accountStore)
 	}
-	
+
 	// Check whether any error occurred while iterating through any rows
 	if err := rows.Err(); err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
@@ -39,4 +55,3 @@ func getAccount(w http.ResponseWriter, r *http.Request) {
 	// send completed response back to client
 	json.NewEncoder(w).Encode(accounts)
 }
-
