@@ -39,8 +39,15 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 
 	// Insert into db
 
-	err = db.QueryRow(
-		"INSERT INTO accounts (name, user_id) VALUES ($1) returning id, user_id",
+	tx, err := db.Begin()
+	if err != nil {
+		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
+		return
+}
+	defer tx.Rollback()
+
+	err = tx.QueryRow(
+		"INSERT INTO accounts (name, user_id) VALUES ($1, $2) returning id",
 		newAccount.Name,
 		userID,
 	).Scan(&newAccount.ID) // we let postgre generate the new id and then we save it in our thing
@@ -62,7 +69,7 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 
 		// Handle the opening balance
 	if newAccount.Balance != 0{
-		_, err = db.Exec(
+		_, err = tx.Exec(
 			"INSERT INTO transactions (name, account_id, amount, transaction_date) VALUES ($1, $2, $3, $4)",
 			newAccount.Name + ": Opening Balance",
 			newAccount.ID,
@@ -75,6 +82,12 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+	
+	err = tx.Commit()
+	if err != nil {
+		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
+		return
+}
 
 	// Account successfully created
 	w.WriteHeader(http.StatusCreated)

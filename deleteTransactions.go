@@ -34,8 +34,8 @@ func deleteTransaction(w http.ResponseWriter, r *http.Request) {
 		AND accounts.user_id = $1 							-- match the right user with the user who made the account
 		AND transactions.id = $2 							-- match the right transaction 
 		AND transactions.deleted_at IS NULL 				-- transaction must not already be deleted`,
+		id,
 		userID,
-		ID,
 	)
 
 	if err != nil {

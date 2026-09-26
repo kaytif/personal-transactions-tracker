@@ -17,6 +17,7 @@ func transactionPutHandler(w http.ResponseWriter, r *http.Request){
 	userID, ok := getUserID(r)
 	if ok == false{
 		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	// first thing to do is to make sure that the transaction id
@@ -44,13 +45,15 @@ func transactionPutHandler(w http.ResponseWriter, r *http.Request){
 	// Let's check that the transaction actually exists based on the 
 	// transaction id
 	err = db.QueryRow(
-		`SELECT id 
+		`SELECT transactions.id 
 		FROM accounts
 		JOIN transactions ON accounts.id = transactions.account_id
 		WHERE accounts.user_id = $1
+		AND transactions.id = $2
 		AND transactions.deleted_at IS NULL
 		`,
 		userID,
+		id,
 	).Scan(&storeTransaction.ID)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -103,8 +106,13 @@ func transactionPutHandler(w http.ResponseWriter, r *http.Request){
 	// check categoy affiliated must existed
 	if storeTransaction.CategoryID != nil {
 		err = db.QueryRow(
-		"SELECT id FROM categories WHERE id = $1",
+		`SELECT categories.id
+		FROM categories 
+		WHERE id = $1 
+		AND user_id = $2 AND 
+		deleted_at is NULL`,
 		storeTransaction.CategoryID,
+		userID,
 		).Scan(&storeTransaction.CategoryID)
 
 		// give error if no active account with this ID exists.
@@ -145,7 +153,7 @@ func transactionPutHandler(w http.ResponseWriter, r *http.Request){
 
 	// no matching transaction existed
 	if rowsAffected == 0 {
-		writeJSONError(w, "Transaction nor found", http.StatusNotFound)
+		writeJSONError(w, "Transaction not found", http.StatusNotFound)
 		return
 	}
 

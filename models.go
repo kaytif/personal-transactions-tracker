@@ -75,3 +75,10 @@ type TransactionResponse struct {
 	AccountName string `json:"account_name"`
 	CategoryName *string `json:"category_name"`
 }
+
+type Transfer struct {
+	FromAccountID int `json:"from_account_id"`
+	ToAccountID int `json:"to_account_id"`
+	Amount float64 `json:"amount"`
+}
+
