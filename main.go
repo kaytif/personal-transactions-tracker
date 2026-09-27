@@ -10,7 +10,7 @@ func main() {
 	// Connect to PostgreSQL.
 	connectDB()
 
-	// Render provides PORT when deployed; use 8080 locally.
+	// Use 8080
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -20,13 +20,13 @@ func main() {
 	http.HandleFunc("/transactions", handlerTransaction)
 
 	// Accounts
-	http.HandleFunc("/accounts", handlerTransaction)
+	http.HandleFunc("/accounts", handlerAccount)
 
 	// Transfers
-	http.HandleFunc("/transfers", handlerTransaction)
+	http.HandleFunc("/transfers", handlerTransfer)
 
 	// Categories
-	http.HandleFunc("/categories", handlerTransaction)
+	http.HandleFunc("/categories", handlerCategory)
 
 	// Users / authentication
 	http.HandleFunc("/register", registerUser)

@@ -3,16 +3,15 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"github.com/jackc/pgx/v5/pgconn"
 	"net/http"
 	"strconv"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func updateCategory(w http.ResponseWriter, r *http.Request){
-	
-	
+func updateCategory(w http.ResponseWriter, r *http.Request) {
+
 	// first receive string
-	idString := r.URL.Query().Get("id")	
+	idString := r.URL.Query().Get("id")
 
 	// then convert string into integer
 	id, err := strconv.Atoi(idString)
@@ -38,7 +37,7 @@ func updateCategory(w http.ResponseWriter, r *http.Request){
 	}
 
 	// validation checks on name, make sure that the name is not empty
-	if category.Name == ""{
+	if category.Name == "" {
 		writeJSONError(w, "Name can not be empty", http.StatusBadRequest)
 		return
 	}
@@ -49,34 +48,33 @@ func updateCategory(w http.ResponseWriter, r *http.Request){
 		category.Name,
 		id,
 		userID,
-		)
+	)
 
-	if err != nil{
+	if err != nil {
 		var pgErr *pgconn.PgError
 
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 			writeJSONError(w, "Category name already exists", http.StatusConflict)
 			return
 		}
-		
+
 		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-
 	rowsAffected, err := result.RowsAffected()
-	
+
 	if err != nil {
 		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
-		return		
+		return
 	}
 
 	if rowsAffected == 0 {
 		writeJSONError(w, "Category not found", http.StatusNotFound)
-		return		
+		return
 	}
 
-	// keep the ID from the URL 
+	// keep the ID from the URL
 	category.ID = id
 
 	// send the updated category back as json

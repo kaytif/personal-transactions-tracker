@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
 	"github.com/jackc/pgx/v5/pgconn"
+	"net/http"
 	"time"
 )
 
@@ -52,7 +52,6 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 		userID,
 	).Scan(&newAccount.ID) // we let postgre generate the new id and then we save it in our thing
 
-
 	// Duplicate error
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -66,12 +65,11 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-		// Handle the opening balance
-	if newAccount.Balance != 0{
+	// Handle the opening balance
+	if newAccount.Balance != 0 {
 		_, err = tx.Exec(
 			"INSERT INTO transactions (name, account_id, amount, transaction_date) VALUES ($1, $2, $3, $4)",
-			newAccount.Name + ": Opening Balance",
+			newAccount.Name+": Opening Balance",
 			newAccount.ID,
 			newAccount.Balance,
 			time.Now(),
@@ -82,7 +80,7 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	err = tx.Commit()
 	if err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
@@ -95,4 +93,3 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	// Send crated expense back as JSON
 	json.NewEncoder(w).Encode(newAccount)
 }
-

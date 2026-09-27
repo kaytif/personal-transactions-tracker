@@ -36,7 +36,7 @@ func getAccountByID(w http.ResponseWriter, r *http.Request) {
 		WHERE id = $1 
 		AND user_id = $2
 		AND deleted_at IS NULL`,
-		id, 
+		id,
 		userID,
 	).Scan(&accountStore.ID, &accountStore.Name)
 

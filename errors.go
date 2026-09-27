@@ -5,8 +5,6 @@ import (
 	"net/http"
 )
 
-
-
 // WriteJSONError sends all API erros in a consistent JSON format.
 func writeJSONError(w http.ResponseWriter, message string, status int) {
 	w.Header().Set("Content-Type", "application/json")

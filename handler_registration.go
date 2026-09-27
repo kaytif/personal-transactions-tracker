@@ -1,33 +1,31 @@
 package main
 
 import (
-	"net/http"
-	"encoding/json"
-	"golang.org/x/crypto/bcrypt"
-	"errors"
 	"database/sql"
+	"encoding/json"
+	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"log"
+	"net/http"
 )
-
 
 func registerUser(w http.ResponseWriter, r *http.Request) {
 
-	
 	// create an empty registration
 	var newRegistration RegisterRequest
-	
+
 	// first take the incoming request and store it as a registration
 
 	err := json.NewDecoder(r.Body).Decode(&newRegistration)
 	if err != nil {
 		writeJSONError(w, "Invalid JSON", http.StatusBadRequest)
-		return	
+		return
 	}
 
 	// now validate the registration details
 	if newRegistration.Username == "" || newRegistration.Password == "" {
 		writeJSONError(w, "Username and password are required", http.StatusBadRequest)
-		return	
+		return
 	}
 
 	// now we gotta hash the password
@@ -36,10 +34,10 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 		log.Println("failed to hash the password:", err) // Real error for developer
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
-}
-	
+	}
+
 	var newUser User
-	newUser.Username = newRegistration.Username 
+	newUser.Username = newRegistration.Username
 	newUser.PasswordHash = string(hash)
 
 	// Search whether username already exists
@@ -72,11 +70,10 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	w.Header().Set("Content-Type", "application/json")
 
 	// User succesfull created
 	w.WriteHeader(http.StatusCreated)
-	
+
 	json.NewEncoder(w).Encode(newUser)
 }

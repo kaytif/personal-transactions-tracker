@@ -11,11 +11,11 @@ import (
 
 // The *http.request has a pointer because the handler receives the address
 // instead of making a copy of the whole address
-func updateTransaction(w http.ResponseWriter, r *http.Request){
+func updateTransaction(w http.ResponseWriter, r *http.Request) {
 
 	// we need to check that the context id we are receiving is integer and store it
 	userID, ok := getUserID(r)
-	if ok == false{
+	if ok == false {
 		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -25,7 +25,7 @@ func updateTransaction(w http.ResponseWriter, r *http.Request){
 	idString := r.URL.Query().Get("id")
 
 	// and does not have any issues
-	// we do that by converting to string 
+	// we do that by converting to string
 	// then we convert from string to integer
 	id, err := strconv.Atoi(idString)
 	if err != nil || id <= 0 {
@@ -42,7 +42,7 @@ func updateTransaction(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	// Let's check that the transaction actually exists based on the 
+	// Let's check that the transaction actually exists based on the
 	// transaction id
 	err = db.QueryRow(
 		`SELECT transactions.id 
@@ -68,7 +68,7 @@ func updateTransaction(w http.ResponseWriter, r *http.Request){
 
 	// once we do that, we need to do all the validations
 	// the validations we need to do are, check that is is not something that is deleted
-	
+
 	// check transaction is 0
 	// we should check here if transaction amount is 0
 	if storeTransaction.Amount == 0 {
@@ -85,14 +85,14 @@ func updateTransaction(w http.ResponseWriter, r *http.Request){
 	// make sure it is not empty
 	if storeTransaction.Date == "" {
 		writeJSONError(w, "Transaction date is required", http.StatusBadRequest)
-    	return
+		return
 	}
 
 	// Parse the date
 	transactionDate, err := time.Parse("2006-01-02", storeTransaction.Date)
 	if err != nil {
 		writeJSONError(w, "Invalid date format", http.StatusBadRequest)
-    	return
+		return
 	}
 
 	// Make sure the date is not greater than now
@@ -106,13 +106,13 @@ func updateTransaction(w http.ResponseWriter, r *http.Request){
 	// check categoy affiliated must existed
 	if storeTransaction.CategoryID != nil {
 		err = db.QueryRow(
-		`SELECT categories.id
+			`SELECT categories.id
 		FROM categories 
 		WHERE id = $1 
 		AND user_id = $2 AND 
 		deleted_at is NULL`,
-		storeTransaction.CategoryID,
-		userID,
+			storeTransaction.CategoryID,
+			userID,
 		).Scan(&storeTransaction.CategoryID)
 
 		// give error if no active account with this ID exists.
@@ -128,7 +128,7 @@ func updateTransaction(w http.ResponseWriter, r *http.Request){
 		}
 	}
 
-		// once all is said and done, let's update the transaction
+	// once all is said and done, let's update the transaction
 	result, err := db.Exec(
 		"UPDATE transactions SET name = $1, amount = $2, transaction_date = $3, updated_at = $4, category_id = $5 WHERE id = $6",
 		storeTransaction.Name,
@@ -142,7 +142,7 @@ func updateTransaction(w http.ResponseWriter, r *http.Request){
 	if err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
-		}
+	}
 
 	// Check how many rows were affected
 	rowsAffected, err := result.RowsAffected()
@@ -162,5 +162,4 @@ func updateTransaction(w http.ResponseWriter, r *http.Request){
 
 	// send updated transaction back as json
 	json.NewEncoder(w).Encode(storeTransaction)
-	}
-	
+}

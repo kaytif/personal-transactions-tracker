@@ -23,7 +23,6 @@ func getAccount(w http.ResponseWriter, r *http.Request) {
 		userID,
 	)
 
-
 	if err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 	}

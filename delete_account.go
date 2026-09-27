@@ -13,7 +13,6 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 	// Convert from string to integer
 	id, err := strconv.Atoi(idString)
 
-
 	// get the verified user ID
 	userID, ok := getUserID(r)
 	if !ok {
@@ -40,22 +39,19 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	// Check whether if anything was deleted
 	rowsAffected, err := result.RowsAffected()
-	
+
 	if err != nil {
 		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-
 	// If not matching account existed
 	if rowsAffected == 0 {
 		writeJSONError(w, "Account not found", http.StatusNotFound)
 		return
-	
+
 	}
 
 	// Successful delete no body return
 	w.WriteHeader(http.StatusNoContent)
 }
-
-

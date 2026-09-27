@@ -45,25 +45,19 @@ func deleteTransaction(w http.ResponseWriter, r *http.Request) {
 
 	// Check whether if anything was deleted
 	rowsAffected, err := result.RowsAffected()
-	
+
 	if err != nil {
 		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-
 	// If not matching account not existed
 	if rowsAffected == 0 {
 		writeJSONError(w, "Transaction not found", http.StatusNotFound)
 		return
-	
+
 	}
 
 	// Successful delete no body return
 	w.WriteHeader(http.StatusNoContent)
 }
-
-
-
-
-

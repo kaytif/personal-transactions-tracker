@@ -1,12 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/jackc/pgx/v5/pgconn"
 	"net/http"
 	"strconv"
-	"github.com/jackc/pgx/v5/pgconn"
-	"database/sql"
 )
 
 // a json decoding error for example occurs when something that needs to be integer in struct is entered as something else in the input
@@ -47,18 +47,17 @@ func updateAccount(w http.ResponseWriter, r *http.Request) {
 
 	// in soft delete: row remains in DB and deleted at timestamp marks it as deleted
 	// If new account does not exist
-	
+
 	// first we need to find whether the account already exists, so we will try to retrive using SELECT
 
 	// note that we don't use rows affected here because rows affected occurs as a result of changing data
 	var checkAccount Account
-	
+
 	err = db.QueryRow(
 		"SELECT id, name, deleted_at FROM accounts WHERE id = $1 and user_id = $2",
 		id,
 		userID,
 	).Scan(&checkAccount.ID, &checkAccount.Name, &checkAccount.DeletedAt)
-
 
 	if errors.Is(err, sql.ErrNoRows) {
 		writeJSONError(w, "Account not found", http.StatusNotFound)
@@ -75,35 +74,33 @@ func updateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// Validate account name is unique
-		// postgre sql does it for you, here we show the error if postgresql gives us an error
-		// Note that you can only update the new account name and not id because id is already assigned itself by sql
+	// postgre sql does it for you, here we show the error if postgresql gives us an error
+	// Note that you can only update the new account name and not id because id is already assigned itself by sql
 	result, err := db.Exec(
-		"UPDATE accounts SET name = $1 WHERE id = $2 and user_id = $3", 
+		"UPDATE accounts SET name = $1 WHERE id = $2 and user_id = $3",
 		newAccount.Name,
 		id,
 		userID,
 	)
 
-
 	if err != nil {
 		var pgErr *pgconn.PgError
-		
+
 		// Duplicate account name
 		// PostgreSQL code 23505 = UNIQUE constraint violation
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 			writeJSONError(w, "Account name already exists", http.StatusConflict)
 			return
 		}
-	// We check here for an error in case there was an error in updating expenses
+		// We check here for an error in case there was an error in updating expenses
 		// Here the error checks for errors that happen while PostgreSQL is executing the UPDATE for e.g.,;
 		// database connection died, unique contraint violated, check ocnstraint violated, foreing key viollated, sql statement itself is invalid
 
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	// Check how many rows were updated
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {

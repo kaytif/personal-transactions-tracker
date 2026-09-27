@@ -1,12 +1,12 @@
 package main
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 	"strconv"
 )
 
-func getTransaction(w http.ResponseWriter, r *http.Request){
+func getTransaction(w http.ResponseWriter, r *http.Request) {
 
 	// get the verified user ID
 	userID, ok := getUserID(r)
@@ -38,7 +38,7 @@ func getTransaction(w http.ResponseWriter, r *http.Request){
 	// get the transaction from postgres
 	// iterate through and store in the list
 	// decode and return
-	// selects all the rowws	
+	// selects all the rowws
 	rows, err := db.Query(
 		`SELECT transactions.id, transactions.name, transactions.amount,
 		transactions.transaction_date, transactions.created_at, accounts.name,
@@ -61,7 +61,6 @@ func getTransaction(w http.ResponseWriter, r *http.Request){
 	}
 	defer rows.Close()
 
-
 	// Start with an empty slice so empty results return [] instead of null
 	transactions := []TransactionResponse{}
 
@@ -70,12 +69,12 @@ func getTransaction(w http.ResponseWriter, r *http.Request){
 		var transactionResponse TransactionResponse
 
 		err := rows.Scan(
-			&transactionResponse.TransactionID, 
-			&transactionResponse.TransactionName, 
-			&transactionResponse.TransactionAmount, 
-			&transactionResponse.TransactionDate, 
-			&transactionResponse.TransactionCreatedAt, 
-			&transactionResponse.AccountName, 
+			&transactionResponse.TransactionID,
+			&transactionResponse.TransactionName,
+			&transactionResponse.TransactionAmount,
+			&transactionResponse.TransactionDate,
+			&transactionResponse.TransactionCreatedAt,
+			&transactionResponse.AccountName,
 			&transactionResponse.CategoryName,
 			&transactionResponse.TransactionType,
 		)
@@ -86,9 +85,9 @@ func getTransaction(w http.ResponseWriter, r *http.Request){
 
 		// add transaction to our list
 
-		transactions = append(transactions, transactionResponse )
+		transactions = append(transactions, transactionResponse)
 	}
-	
+
 	// Check whether an error occurred while iterating through rows.
 	if err := rows.Err(); err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
@@ -99,4 +98,3 @@ func getTransaction(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(transactions)
 
 }
-

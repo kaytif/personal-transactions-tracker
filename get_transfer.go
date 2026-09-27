@@ -1,18 +1,18 @@
 package main
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 )
 
-func getTransfer(w http.ResponseWriter, r *http.Request){
+func getTransfer(w http.ResponseWriter, r *http.Request) {
 
 	userID, ok := getUserID(r)
 	if !ok {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	// Select the rows that are needed
 	rows, err := db.Query(
 		`SELECT transactions.id, 
@@ -32,7 +32,7 @@ func getTransfer(w http.ResponseWriter, r *http.Request){
 		"transfer",
 		userID,
 	)
-		if err != nil {
+	if err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -44,14 +44,14 @@ func getTransfer(w http.ResponseWriter, r *http.Request){
 	// Move through the rows
 	for rows.Next() {
 		var transactionResponse TransactionResponse
-		
+
 		err := rows.Scan(
-			&transactionResponse.TransactionID, 
-			&transactionResponse.TransactionName, 
-			&transactionResponse.TransactionAmount, 
-			&transactionResponse.TransactionDate, 
-			&transactionResponse.TransactionCreatedAt, 
-			&transactionResponse.AccountName, 
+			&transactionResponse.TransactionID,
+			&transactionResponse.TransactionName,
+			&transactionResponse.TransactionAmount,
+			&transactionResponse.TransactionDate,
+			&transactionResponse.TransactionCreatedAt,
+			&transactionResponse.AccountName,
 			&transactionResponse.CategoryName,
 			&transactionResponse.TransactionType,
 		)
@@ -62,9 +62,9 @@ func getTransfer(w http.ResponseWriter, r *http.Request){
 
 		// add transaction to our list
 
-		transactions = append(transactions, transactionResponse )
+		transactions = append(transactions, transactionResponse)
 	}
-	
+
 	// Check whether an error occurred while iterating through rows.
 	if err := rows.Err(); err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)

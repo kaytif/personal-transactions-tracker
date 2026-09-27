@@ -18,10 +18,10 @@ func createTransaction(w http.ResponseWriter, r *http.Request) {
 
 	// authenticate context received from r
 	userID, ok := getUserID(r)
-	if ok == false{
+	if ok == false {
 		writeJSONError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
-		}	
+	}
 
 	var newTransaction Transaction
 
@@ -40,7 +40,7 @@ func createTransaction(w http.ResponseWriter, r *http.Request) {
 
 	// to deal with categories, we don't make them necessary
 	// if category is not entered, then we want it to remain null
-	// category remaining null means 
+	// category remaining null means
 
 	// checked account affiliated must exist
 	var verifyUserID int
@@ -59,9 +59,9 @@ func createTransaction(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
-		}
+	}
 
-	if verifyUserID != userID{
+	if verifyUserID != userID {
 		writeJSONError(w, "Not Authorized", http.StatusForbidden)
 		return
 	}
@@ -75,8 +75,8 @@ func createTransaction(w http.ResponseWriter, r *http.Request) {
 	// check categoy affiliated must existed
 	if newTransaction.CategoryID != nil {
 		err = db.QueryRow(
-		"SELECT id FROM categories WHERE id = $1",
-		newTransaction.CategoryID,
+			"SELECT id FROM categories WHERE id = $1",
+			newTransaction.CategoryID,
 		).Scan(&newTransaction.CategoryID)
 
 		// give error if no active account with this ID exists.
@@ -98,14 +98,14 @@ func createTransaction(w http.ResponseWriter, r *http.Request) {
 	// make sure it is not empty
 	if newTransaction.Date == "" {
 		writeJSONError(w, "Transaction date is required", http.StatusBadRequest)
-    	return
+		return
 	}
 
 	// Parse the date
 	transactionDate, err := time.Parse("2006-01-02", newTransaction.Date)
 	if err != nil {
 		writeJSONError(w, "Invalid date format", http.StatusBadRequest)
-    	return
+		return
 	}
 
 	// Make sure the date is not greater than today
@@ -117,7 +117,7 @@ func createTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// now inserting into postgre sql. we need to scan the rows and get the id
-	// this is because the frontend might need to use it 
+	// this is because the frontend might need to use it
 	err = db.QueryRow(
 		"INSERT INTO transactions (account_id, name, amount, transaction_date, category_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		newTransaction.AccountID,

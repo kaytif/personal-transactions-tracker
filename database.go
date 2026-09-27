@@ -1,11 +1,11 @@
 package main
 
-import(
+import (
 	"database/sql"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"github.com/joho/godotenv"
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var db *sql.DB
@@ -29,7 +29,7 @@ func connectDB() {
 	db, err = sql.Open("pgx", databaseURL)
 	if err != nil {
 		log.Fatal("failed to open databaseL ", err)
-	} 
+	}
 
 	// Verify that PostgreSQL is reachable
 	if err = db.Ping(); err != nil {

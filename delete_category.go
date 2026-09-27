@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func deleteCategory(w http.ResponseWriter, r *http.Request){
+func deleteCategory(w http.ResponseWriter, r *http.Request) {
 	// extract id from url and into string
 	idString := r.URL.Query().Get("id")
 
@@ -29,7 +29,7 @@ func deleteCategory(w http.ResponseWriter, r *http.Request){
 		SET deleted_at = NOW()
 		WHERE id = $1
 		AND user_id = $2
-		AND deleted_at IS NULL`, 
+		AND deleted_at IS NULL`,
 		id,
 		userID,
 	)
@@ -39,7 +39,7 @@ func deleteCategory(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	// 
+	//
 	rowsAffected, err := result.RowsAffected()
 
 	if err != nil {

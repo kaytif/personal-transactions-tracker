@@ -6,13 +6,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"time"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type contextKey string
+
 const userIDKey contextKey = "userID"
 
 // Get the authenticated user's ID from the request context.
@@ -46,7 +47,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		log.Printf("failed to query user", err)
+		log.Printf("failed to query user: %v", err)
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -61,7 +62,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		log.Printf("failed to compre password hard: %v", err)
+		log.Printf("failed to compare password hash: %v", err)
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -69,7 +70,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// create a session
 	var newSession Session
 	var token string
-		// create token using crypto/rand
+	// create token using crypto/rand
 	token = rand.Text()
 
 	// Insert the session into postgresql
@@ -77,21 +78,23 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		"INSERT INTO sessions (user_id, token, expires_at) VALUES ($1, $2, $3) RETURNING user_id, token, created_at, expires_at",
 		storedUser.ID,
 		token,
-		time.Now().Add(7 * 24 * time.Hour),
+		time.Now().Add(7*24*time.Hour),
 	).Scan(&newSession.UserID, &newSession.Token, &newSession.CreatedAt, &newSession.ExpiresAt)
-	
+
 	if err != nil {
 		log.Printf("failed to create session: %v", err)
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	cookie := &http.Cookie{
-		Name: "session",
-		Value: token,
-		Path: "/",
-		Expires: newSession.ExpiresAt,
+		Name:     "session",
+		Value:    token,
+		Path:     "/",
+		Expires:  newSession.ExpiresAt,
 		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(w, cookie)
@@ -128,8 +131,8 @@ func authMiddleware(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(
-			r.Context(), 
-			userIDKey, 
+			r.Context(),
+			userIDKey,
 			authenticateSession.UserID,
 		)
 
@@ -139,9 +142,3 @@ func authMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
-
-
-
-
-
-
