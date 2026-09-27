@@ -11,7 +11,7 @@ import (
 
 // The *http.request has a pointer because the handler receives the address
 // instead of making a copy of the whole address
-func transactionPutHandler(w http.ResponseWriter, r *http.Request){
+func updateTransaction(w http.ResponseWriter, r *http.Request){
 
 	// we need to check that the context id we are receiving is integer and store it
 	userID, ok := getUserID(r)

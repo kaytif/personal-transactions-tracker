@@ -43,7 +43,7 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
-}
+	}
 	defer tx.Rollback()
 
 	err = tx.QueryRow(
@@ -87,7 +87,7 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)
 		return
-}
+	}
 
 	// Account successfully created
 	w.WriteHeader(http.StatusCreated)

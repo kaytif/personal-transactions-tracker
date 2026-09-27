@@ -7,7 +7,7 @@ import (
 
 
 
-func getCategories(w http.ResponseWriter, r *http.Request){
+func getCategory(w http.ResponseWriter, r *http.Request){
 	userID, ok := getUserID(r)
 	if !ok {
 		writeJSONError(w, "Internal server error", http.StatusInternalServerError)

@@ -35,6 +35,7 @@ type Transaction struct {
 	// A transaction may or may not have a category. But an actual category always has an ID.
 	CategoryID *int `json:"category_id"`
 	DeletedAt *time.Time `json:"deleted_at"`
+	TransactionType *string `json:"transaction_type"`
 }
 
 // this is what is received temporarily
@@ -74,11 +75,13 @@ type TransactionResponse struct {
 	TransactionCreatedAt time.Time `json:"created_at"`
 	AccountName string `json:"account_name"`
 	CategoryName *string `json:"category_name"`
+	TransactionType *string `json:"transaction_type"`
 }
 
 type Transfer struct {
 	FromAccountID int `json:"from_account_id"`
 	ToAccountID int `json:"to_account_id"`
 	Amount float64 `json:"amount"`
+	Date string `json:"date"`
 }
 

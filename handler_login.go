@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/cipher"
 	"crypto/rand"
 	"database/sql"
 	"encoding/json"
@@ -10,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-
 	"golang.org/x/crypto/bcrypt"
 )
 

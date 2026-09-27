@@ -17,7 +17,16 @@ func main() {
 	}
 
 	// Transactions
-	http.HandleFunc("/transactions", transactionPostHandler)
+	http.HandleFunc("/transactions", handlerTransaction)
+
+	// Accounts
+	http.HandleFunc("/accounts", handlerTransaction)
+
+	// Transfers
+	http.HandleFunc("/transfers", handlerTransaction)
+
+	// Categories
+	http.HandleFunc("/categories", handlerTransaction)
 
 	// Users / authentication
 	http.HandleFunc("/register", registerUser)

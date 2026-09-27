@@ -58,4 +58,9 @@ CREATE TABLE transactions (
 
     -- Timestamp used for soft deletion
     deleted_at TIMESTAMPTZ
+
+    -- Transaction type
+    transaction_type TEXT NOT NULL DEFAULT 'regular'
+
+    -- Transfer ID 
 );

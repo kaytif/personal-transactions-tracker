@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func transactionPostHandler(w http.ResponseWriter, r *http.Request) {
+func createTransaction(w http.ResponseWriter, r *http.Request) {
 	// post is adding so no id check id will be generated automatically
 	// name needs to be checked against the things
 	// okay if transaction name is unique
@@ -108,7 +108,7 @@ func transactionPostHandler(w http.ResponseWriter, r *http.Request) {
     	return
 	}
 
-	// Make sure the date is not greater than now
+	// Make sure the date is not greater than today
 	now := time.Now()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	if transactionDate.After(today) {
