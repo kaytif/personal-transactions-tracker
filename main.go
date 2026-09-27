@@ -21,9 +21,6 @@ func main() {
 	http.Handle("/transfers", authMiddleware(http.HandlerFunc(handlerTransfer)))
 	http.Handle("/categories", authMiddleware(http.HandlerFunc(handlerCategory)))
 
-	http.HandleFunc("/register", registerUser)
-	http.HandleFunc("/login", loginHandler)
-
 	// Users / authentication
 	http.HandleFunc("/register", registerUser)
 	http.HandleFunc("/login", loginHandler)
