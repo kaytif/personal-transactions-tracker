@@ -57,7 +57,7 @@ CREATE TABLE transactions (
     category_id INTEGER REFERENCES categories(id),
 
     -- Timestamp used for soft deletion
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
 
     -- Transaction type
     transaction_type TEXT NOT NULL DEFAULT 'regular'
