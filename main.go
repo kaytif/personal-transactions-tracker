@@ -16,17 +16,13 @@ func main() {
 		port = "8080"
 	}
 
-	// Transactions
-	http.HandleFunc("/transactions", handlerTransaction)
+	http.Handle("/transactions", authMiddleware(http.HandlerFunc(handlerTransaction)))
+	http.Handle("/accounts", authMiddleware(http.HandlerFunc(handlerAccount)))
+	http.Handle("/transfers", authMiddleware(http.HandlerFunc(handlerTransfer)))
+	http.Handle("/categories", authMiddleware(http.HandlerFunc(handlerCategory)))
 
-	// Accounts
-	http.HandleFunc("/accounts", handlerAccount)
-
-	// Transfers
-	http.HandleFunc("/transfers", handlerTransfer)
-
-	// Categories
-	http.HandleFunc("/categories", handlerCategory)
+	http.HandleFunc("/register", registerUser)
+	http.HandleFunc("/login", loginHandler)
 
 	// Users / authentication
 	http.HandleFunc("/register", registerUser)

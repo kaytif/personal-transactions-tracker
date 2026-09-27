@@ -21,7 +21,7 @@ CREATE TABLE categories (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     -- Category name must exist, cannot be empty, and cannot be duplicated
-    name TEXT NOT NULL UNIQUE CHECK (length(name) > 0)
+    name TEXT NOT NULL UNIQUE CHECK (length(name) > 0),
 
     -- Timestamp used for soft deletion
     deleted_at TIMESTAMPTZ
@@ -61,6 +61,4 @@ CREATE TABLE transactions (
 
     -- Transaction type
     transaction_type TEXT NOT NULL DEFAULT 'regular'
-
-    -- Transfer ID 
 );
