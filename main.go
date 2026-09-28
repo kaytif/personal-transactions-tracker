@@ -23,7 +23,7 @@ func main() {
 
 	// Users / authentication
 	http.HandleFunc("/register", registerUser)
-	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/login", handlerLogin)
 
 	log.Println("server running on port " + port)
 
