@@ -22,7 +22,7 @@ func getUserID(r *http.Request) (int, bool) {
 	return userID, ok
 }
 
-func loginHandler(w http.ResponseWriter, r *http.Request) {
+func handlerLogin(w http.ResponseWriter, r *http.Request) {
 	// so essentially you need to check tht the username exists in the database
 	// we need to retrive the password hash
 
@@ -93,8 +93,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		Expires:  newSession.ExpiresAt,
 		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(w, cookie)
