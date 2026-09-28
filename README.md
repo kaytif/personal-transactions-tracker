@@ -44,7 +44,7 @@ Building the API exposed several design and system limitations that I discovered
 ### Transfers as First Class Entities
 I have coded each transfer to be stored as two separate transactions, i.e., a negative transaction on the source account and a positive transaction on the destination account. I chose this approach because I wanted transactions to remain the single source of truth for transaction data and derived values such as account balances.
 
-As the project developed, I realized that transfers should also have a first class representation in the database. Without this, the system needs additional logic within the transaction model to identify and group the two transactions belonging to a transfer. This introduces unnecessary complexity and requires the relationship between the transactions to be inferred rather than explicitly stored in the database.
+As I progressed, I realized that transfers should also have a first class representation in the database. Without such a representation the system needs additional logic within a transactions struct to identify and group the two transactions in each transfer. This introduces unnecessary complexity and requires the relationship between the transactions to be inferred rather than explicitly stored in the database.
 
 A separate `transfers` table could represent the transfer itself, while the two transaction entries could reference the same transfer. This would allow the two sides of a transfer to be easily grouped and tracked while still keeping transactions as the source of truth for account activity and balances.
 
